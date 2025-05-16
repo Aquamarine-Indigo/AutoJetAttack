@@ -121,7 +121,7 @@ class TrainEnv(gymnasium.Env):
 
         step_reward, string = reward.calculate_reward(prev_my_state, prev_enemy_state, self.my_state, self.enemy_state)
         string += string_add
-        # print(f"Action: {real_action}\n" + string)
+        print(f"Action: {real_action}\n" + string)
 
         return self.state, step_reward, terminated, truncated, {}
 

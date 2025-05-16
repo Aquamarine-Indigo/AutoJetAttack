@@ -23,7 +23,7 @@ def calculate_reward(prev_my_state, prev_enemy_state, my_state, enemy_state):
     my_blood = my_state[-1]
     enemy_blood = enemy_state[-1]
     
-    reward = distance_reward + angle_reward + my_blood*cfg.my_blood_reward + enemy_blood*cfg.enemy_blood_reward
+    reward = distance_reward + angle_reward + my_blood*cfg.my_blood_reward + enemy_blood*cfg.enemy_blood_reward + cfg.alive_reward
     
     string = f"""
 Values:
