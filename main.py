@@ -15,7 +15,7 @@ def main():
     os.makedirs(log_dir, exist_ok=True)
     logger = configure(log_dir, ["stdout", "csv"])
     checkpoint_callback = CheckpointCallback(
-        save_freq=100000,
+        save_freq=30000,
         save_path="./model/",
         name_prefix="model",
         save_replay_buffer=True,
@@ -26,7 +26,7 @@ def main():
 
     model = custom_model.create_model(config_path= './config/algs.yaml',env = env)
     model.set_logger(logger)
-    model.learn(total_timesteps=20000,progress_bar=True, reset_num_timesteps=False,log_interval=1,
+    model.learn(total_timesteps=200000,progress_bar=True, reset_num_timesteps=False,log_interval=10000,
                 callback=checkpoint_callback)
 
 if __name__ == "__main__":

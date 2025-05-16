@@ -8,14 +8,14 @@ import os
 
 def float_to_bool(f):
     if f == 0.0:
-        print("False!")
+        # print("False!")
         return False
     elif f == 1.0:
-        print("True!")
+        # print("True!")
         return True
     else:
         # Should not be here!
-        print(f)
+        # print(f)
         print("Float comparison error!")
         return None
 
@@ -39,7 +39,7 @@ def split_observation(observation):
 
 def pack_action(action, truncated):
     if truncated:
-        truncation = 1.0
+        truncation = 2.0
     else:
         truncation = 0.0
     full_pack = np.append(action, truncation)
@@ -51,13 +51,14 @@ class TrainEnv(gymnasium.Env):
         super().__init__()
 
         # Agent space bounds
-        action_upper_bound = np.ones(shape=[4], dtype=np.float64)
-        action_lower_bound = np.negative(np.ones(shape=[4], dtype=np.float64))
+        action_upper_bound = np.ones(shape=[4], dtype=np.float64) * 3.0
+        action_lower_bound = np.negative(np.ones(shape=[4], dtype=np.float64)) * 3.0
         self.action_space = spaces.Box(shape=[4], dtype=np.float64, low=action_lower_bound, high=action_upper_bound)
 
-        observation_upper_bound = np.ones(shape=[15], dtype=np.float64)
-        observation_lower_bound = np.negative(np.ones(shape=[15], dtype=np.float64))
-        self.observation_space = spaces.Box(shape=[15], dtype=np.float64, low=observation_lower_bound, high=observation_upper_bound)
+        observation_upper_bound = np.ones(shape=[30], dtype=np.float64) * 25.0
+        observation_lower_bound = np.negative(np.ones(shape=[30], dtype=np.float64)) * 25.0
+        # self.observation_space = spaces.Box(shape=[15], dtype=np.float64, low=observation_lower_bound, high=observation_upper_bound)
+        self.observation_space = spaces.Box(shape=[30,], dtype=np.float64, low=observation_lower_bound, high=observation_upper_bound)
 
         # Initialize adaptor
         self.adaptor = adaptor.NetworkAdaptor(config_path)
@@ -94,18 +95,33 @@ class TrainEnv(gymnasium.Env):
         self.my_state, self.enemy_state, terminated = split_observation(original_observation)
         if self.logger:
             self.recorder.record(self.my_state, self.enemy_state)
-        if not terminated:
-            print("FUCK!")
-            print(self.my_state)
+        # if not terminated:
+        #     print("FUCK!")
+            # print(self.my_state)
+        if terminated:
+            print("寄! Terminated!")
         # Process whole state into agent state
         self.state = observation.marshal_observation(self.my_state, self.enemy_state)
+        
+        
+        # If distance < 2000m and angle < 10 degrees, decrease enemy blood by 0.5
+        state_distance = np.linalg.norm(self.state[26:29])
+        state_angle = self.state[29]
+        string_add = f'\nState distance = {state_distance}\nState angle diff = {state_angle}\nAttack range = {30 * np.pi / 180}'
+        if state_distance < 200 and np.abs(state_angle) < 30 * np.pi / 180:
+            self.enemy_state[-1] -= 0.5
+            string_add += f'\nAttack: True\n'
+        else:
+            string_add += f'\nAttack: False\n'
 
         # Check for termination
         # But truncation has a higher priority
         if truncated:
             terminated = False
 
-        step_reward = reward.calculate_reward(prev_my_state, prev_enemy_state, self.my_state, self.enemy_state)
+        step_reward, string = reward.calculate_reward(prev_my_state, prev_enemy_state, self.my_state, self.enemy_state)
+        string += string_add
+        # print(f"Action: {real_action}\n" + string)
 
         return self.state, step_reward, terminated, truncated, {}
 
