@@ -1,5 +1,5 @@
 """
-main函数，用于训练模型并保存
+main
 """
 import os
 import matplotlib.pyplot as plt
@@ -26,7 +26,7 @@ def main():
 
     model = custom_model.create_model(config_path= './config/algs.yaml',env = env)
     model.set_logger(logger)
-    model.learn(total_timesteps=20000,progress_bar=True, reset_num_timesteps=False,log_interval=1,
+    model.learn(total_timesteps=900000,progress_bar=True, reset_num_timesteps=False,log_interval=1,
                 callback=checkpoint_callback)
 
 if __name__ == "__main__":

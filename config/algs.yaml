@@ -1,17 +1,14 @@
 agent:
-  policy_type: mlp  # 或 transformer
-  # transformer专用
-  features_dim: 256
-  nhead: 8
+  policy_type: mlp  # or "mlp"
+  features: 256
+  nheads: 8
   num_layers: 3
-  # SAC专用
   pi_arch: [256, 256]
   qf_arch: [512, 512]
   tau: 0.005
   ent_coef: 0.2
-
 training:
-  algorithm: sac  # 新增支持sac
-  learning_rate: 3e-4
+  algorithm: sac            # or "ppo"
+  learning_rate: 0.0003
   gamma: 0.99
   device: cpu

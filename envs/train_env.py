@@ -55,9 +55,9 @@ class TrainEnv(gymnasium.Env):
         action_lower_bound = np.negative(np.ones(shape=[4], dtype=np.float64))
         self.action_space = spaces.Box(shape=[4], dtype=np.float64, low=action_lower_bound, high=action_upper_bound)
 
-        observation_upper_bound = np.ones(shape=[15], dtype=np.float64)
-        observation_lower_bound = np.negative(np.ones(shape=[15], dtype=np.float64))
-        self.observation_space = spaces.Box(shape=[15], dtype=np.float64, low=observation_lower_bound, high=observation_upper_bound)
+        observation_upper_bound = np.ones(shape=[22], dtype=np.float64)
+        observation_lower_bound = np.negative(np.ones(shape=[22], dtype=np.float64))
+        self.observation_space = spaces.Box(shape=[22], dtype=np.float64, low=observation_lower_bound, high=observation_upper_bound)
 
         # Initialize adaptor
         self.adaptor = adaptor.NetworkAdaptor(config_path)
@@ -106,6 +106,7 @@ class TrainEnv(gymnasium.Env):
             terminated = False
 
         step_reward = reward.calculate_reward(prev_my_state, prev_enemy_state, self.my_state, self.enemy_state)
+        print(step_reward)
 
         return self.state, step_reward, terminated, truncated, {}
 
